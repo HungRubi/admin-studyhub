@@ -1,0 +1,38 @@
+import appReducer from "./appReducer";
+import { combineReducers } from "redux";
+import storage from 'redux-persist/lib/storage'
+import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
+import { persistReducer } from 'redux-persist';
+import userReducer from "./userReducer";
+import objectReducer from "./objectReducer";
+
+const commonConfig = {
+    storage: storage,
+    stateReconciler: autoMergeLevel2,
+}
+
+const userConfig = {
+    ...commonConfig,
+    key: 'userAdmin',
+    whitelist: [
+        'currentUser',
+        'token',
+        'refreshToken',
+    ],
+}
+
+const appConfig = {
+    ...commonConfig,
+    key: 'appAdmin',
+    whitelist: [
+        'globalConfig',
+    ],
+}
+
+const rootReducer = combineReducers({
+    app: persistReducer(appConfig, appReducer),
+    user: persistReducer(userConfig, userReducer),
+    object: objectReducer,
+})
+
+export default rootReducer
