@@ -38,9 +38,11 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
                         <img 
                             src={"/images/logo.png"}
                             alt={"Logo"}
-                            className='w-12.5 sm:w-15 md:w-17.5 ml-1.25 sm:ml-2.5 md:ml-3.75 object-contain flex-none'
+                            className='w-12.5 sm:w-15 md:w-17.5 object-contain flex-none'
                         />
-                    
+                        <h1 className='ml-1.5 text-[#e5780b] text-2xl font-bold'>
+                            StudyHub
+                        </h1>
                 </NavLink>
             </div>
             <div className="mr-2.5 sm:mr-5 md:mr-7.5 flex items-center gap-2 sm:gap-3 md:gap-4">

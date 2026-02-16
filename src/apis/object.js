@@ -10,4 +10,8 @@ export const addObject = (data) => {
   return api.post('/objects/add', data);
 };
 
-export default { fetchObjects, addObject };
+export const apiDeleteObject = (id) => {
+  return api.delete(`/objects/delete/${id}`, id);
+};
+
+export default { fetchObjects, addObject, apiDeleteObject };

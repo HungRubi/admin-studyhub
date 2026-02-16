@@ -1,25 +1,26 @@
 import { useEffect, useState } from "react";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Input, Button, Combobox, Textarea } from '../components';
 import icon from '../util/icon';
 import { useDispatch, useSelector } from "react-redux";
 import generateSlug from '../util/slug';
 import { getObjects, addObject } from "../store/actions/object";
+import { toast } from "react-toastify";
 const { MdChevronRight } = icon;
 const ObjectEdit = () => {
     
     const activeData = [
         {
-            id: 'Yes',
+            id: 'yes',
             text: 'Yes'
         },
         {
-            id: 'No',
+            id: 'no',
             text: 'No'
         }
     ]
     const dispatch = useDispatch();
-    const { items: objects } = useSelector(state => state.object || { items: []});
+    const { items: objects, addMessage } = useSelector(state => state.object || { items: []});
     useEffect(() => {
         dispatch(getObjects());
     }, [dispatch])
@@ -46,10 +47,29 @@ const ObjectEdit = () => {
             return updated;
         });
     };
+    const navigate = useNavigate()
     const handleSubmit  = (e) => {
         e.preventDefault();
         dispatch(addObject(formData))
+        setFormData({
+            name: '',
+            thumbnail: '',
+            parentId: '',
+            index: '9999',
+            active: 'yes',
+            description: '',
+            slug: '',
+        })
     }
+    useEffect(() => {
+        if(addMessage === 'Thêm môn học thành công!') {
+            navigate("/object")
+            toast.success(addMessage)
+        }else{
+            toast.error(addMessage)
+        }
+    }, [addMessage, navigate])
+    
     return (
         <div className="full pt-3 sm:pt-5">
             <div className="w-full px-4 sm:px-6 md:px-7.5 flex gap-4 sm:gap-8">

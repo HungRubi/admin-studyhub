@@ -20,12 +20,12 @@ export const menu = [
         path: '/object',
     },
     {
-        text: 'Quản lý tin tức',
+        text: 'Documents',
         icon: <HiOutlineNewspaper className='text-base text-color'/>,
         path: '/new'
     },
     {
-        text: 'Trang nội dung',
+        text: 'Users',
         icon: <LuReceiptText className='text-base text-color'/>,
         path: '/page-content',
     },

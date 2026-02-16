@@ -48,33 +48,16 @@ const Object = () => {
     }
     const handleDelete = () => {
         if (deleteItem) {
-            console.log("hi")
+            dispatch(deleteItem(deleteItem))
         } else if (selectedIds.length > 0) {
             setDeleteItem([])
         }
     }
+    console.log(deleteItem)
     const handleSearch = (value) => {
         dispatch(getObjects(value))
     }
-    // const handleAddSubmit = async (e) => {
-    //     e.preventDefault();
-    //     const payload = {
-    //         name: form.name,
-    //         slug: form.slug,
-    //         thumbnail: form.thumbnail,
-    //         parentId: form.parentId || null,
-    //         description: form.description,
-    //         stt: form.stt || undefined,
-    //     };
-    //     const res = await dispatch(addObject(payload));
-    //     if (res?.ok) {
-    //         toast.success(res.message || 'Thêm thành công');
-    //         setForm({ name: '', slug: '', thumbnail: '', parentId: '', description: '', stt: '' });
-    //         navigate('/object');
-    //     } else {
-    //         toast.error(res?.message || 'Thêm thất bại');
-    //     }
-    // };
+
     const [filters, setFilters] = useState({ danhmucId: "", duyetbai: "" });
 
     const handleChange = (e) => {
@@ -84,6 +67,7 @@ const Object = () => {
         setFilters(newFilters);
 
     };
+    console.log("hello")
     return (
         <div className="full pt-3 sm:pt-5">
             {isModal && <ModelToast isOpen={isModal} setIsOpen={setIsModal} onDelete={handleDelete}/>}
