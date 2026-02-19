@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 const Input = ({className, placeholder, label, type, name, value, onChange, isInput}) => {
     return (
         <div className="mt-4 sm:mt-5">
-            <label htmlFor="price" className={`block text-sm sm:text-base md:text-[16px] font-medium text-gray-800 ${isInput}`}>
+            <label htmlFor="price" className={`block text-sm font-medium text-gray-800 ${isInput}`}>
                 {label}
             </label>
             <div className="mt-2">

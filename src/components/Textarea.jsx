@@ -5,7 +5,7 @@ const Textarea = ({name, row, children, value, label, className, onChange}) => {
     
     return (
         <div className="mt-5">
-            <label className="block text-[16px] font-medium text-gray-800">
+            <label className="block text-sm font-medium text-gray-800">
                 {label}
             </label>
             <textarea 

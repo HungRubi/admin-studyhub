@@ -26,8 +26,16 @@ export default function objectReducer(state = initialState, action) {
             return { ...state, deleting: false, deleteMessage: action.payload};
         case 'DELETE_OBJECT_FAILURE':
             return { ...state, deleting: false, deleteMessage: action.payload};
+        case 'DELETE_MANY_OBJECTS':
+            return { ...state, deleting: true, deleteMessage: null};
+        case 'DELETE_MANY_OBJECTS_SUCCESS':
+            return { ...state, deleting: false, deleteMessage: action.payload};
+        case 'DELETE_MANY_OBJECTS_FAILURE':
+            return { ...state, deleting: false, deleteMessage: action.payload};
         case 'RESET_OBJECTS':
             return initialState;
+        case 'RESET_ADD_MESSAGE':
+            return { ...state, addMessage: null };
         default:
             return state;
     }

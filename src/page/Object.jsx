@@ -1,10 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import  { Search, Button, CircleButton, PageBar, Empty, ModelToast } from '../components';
+import  { Search, Button, CircleButton, PageBar, Empty, ModelToast, Loading } from '../components';
 import icon from '../util/icon';
 import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getObjects } from '../store/actions/object';
-const { MdChevronRight, MdAutoFixHigh, IoMdAdd, RiDeleteBin6Line, IoMdRefresh} = icon;
+import { getObjects, deleteObject, deleteManyObjects } from '../store/actions/object';
+import { toast } from "react-toastify";
+
+const { MdChevronRight, MdAutoFixHigh, IoMdAdd, RiDeleteBin6Line, IoMdRefresh, FaSortUp, FaSortDown, FaSort } = icon;
 const Object = () => {
     const status = [
         {
@@ -18,9 +20,11 @@ const Object = () => {
     ]
     const dispatch = useDispatch();
     const { items: objects, loading: objectsLoading, error: objectsError } = useSelector(state => state.object || { items: [], loading: false, error: null });
+    const [sortBy, setSortBy] = useState(null);
     useEffect(() => {
-        dispatch(getObjects());
-    }, [dispatch])
+        console.log('useEffect - sortBy:', sortBy);
+        dispatch(getObjects('', sortBy || ''));
+    }, [dispatch, sortBy])
     const [current, setCurrent] = useState(1);
     const limit = 10;
     const lastIndex = current * limit;
@@ -46,16 +50,44 @@ const Object = () => {
             setSelectedIds(currentObject?.map(item => item._id));
         }
     }
-    const handleDelete = () => {
+    const handleDelete = async () => {
+        let result;
+
         if (deleteItem) {
-            dispatch(deleteItem(deleteItem))
-        } else if (selectedIds.length > 0) {
-            setDeleteItem([])
+            result = await dispatch(deleteObject(deleteItem));
+            setDeleteItem(null);
+        } 
+        else if (selectedIds.length > 1) {
+            result = await dispatch(deleteManyObjects(selectedIds));
+            setSelectedIds([]);
         }
+
+        if (result?.ok) {
+            toast.success(result.message);
+        } else {
+            toast.error(result?.message || "Delete failed");
+        }
+
+        setIsModal(false);
     }
-    console.log(deleteItem)
     const handleSearch = (value) => {
-        dispatch(getObjects(value))
+        dispatch(getObjects(value, sortBy || ''))
+    }
+
+    const handleSort = (field) => {
+        const newSort = (sortBy && sortBy.startsWith(field)) 
+            ? (sortBy.endsWith('_asc') ? `${field}_desc` : `${field}_asc`)
+            : `${field}_desc`;
+        setSortBy(newSort);
+    }
+
+    const getSortIcon = (field) => {
+        if (sortBy && sortBy.startsWith(field)) {
+            return sortBy.endsWith('_asc') ? 
+            <FaSortUp className="text-blue-500 text-xs cursor-pointer" /> : 
+            <FaSortDown className="text-blue-500 text-xs cursor-pointer" />;
+        }
+        return <FaSort className="text-gray-500 text-xs cursor-pointer" />;
     }
 
     const [filters, setFilters] = useState({ danhmucId: "", duyetbai: "" });
@@ -67,14 +99,17 @@ const Object = () => {
         setFilters(newFilters);
 
     };
-    console.log("hello")
+    useEffect(() => {
+        if(objectsError) toast.error(objectsError);
+    })
     return (
         <div className="full pt-3 sm:pt-5">
+            {objectsLoading && <Loading />}
             {isModal && <ModelToast isOpen={isModal} setIsOpen={setIsModal} onDelete={handleDelete}/>}
             <div className="w-full px-4 sm:px-6 md:px-7.5 flex gap-4 sm:gap-8">
                 <div className="w-full">
-                    <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm md:text-[15px] text-color">
-                        <NavLink to={'/'} className={"hover:text-blue-600 transition duration-300 ease-linear"}>
+                    <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm md:text-[15px] text-color font-semibold">
+                        <NavLink to={'/'} className={"hover:text-blue-600 transition  duration-300 ease-linear"}>
                             Dashboard
                         </NavLink>
                         <MdChevronRight className="text-sm sm:text-base"/>
@@ -153,25 +188,31 @@ const Object = () => {
                                     />
                                 </th>
                                 <th scope="col" className="px-2 sm:px-4 py-2 sm:py-3">
-                                    name
+                                    <div className="flex items-center gap-1.5 cursor-pointer hover:opacity-80" onClick={() => handleSort('name')}>
+                                        <span>name</span>
+                                        {getSortIcon('name')}
+                                    </div>
                                 </th>
                                 <th scope="col" className="px-2 sm:px-4 py-2 sm:py-3 hidden sm:table-cell">
                                     Thumbnail
                                 </th>
                                 <th scope="col" className="px-2 sm:px-4 py-2 sm:py-3">
-                                    Parent
+                                    parent
                                 </th>
                                 <th scope="col" className="px-2 sm:px-4 py-2 sm:py-3 hidden md:table-cell">
-                                    Active
+                                    active
                                 </th>
                                 <th scope="col" className="px-2 sm:px-4 py-2 sm:py-3 hidden md:table-cell">
-                                    Slug
+                                    slug
                                 </th>
                                 <th scope="col" className="px-2 sm:px-4 py-2 sm:py-3 hidden lg:table-cell">
                                     STT
                                 </th>
                                 <th scope="col" className="px-2 sm:px-4 py-2 sm:py-3 hidden lg:table-cell">
-                                    Ngày đăng
+                                    <div className="flex items-center gap-1.5 cursor-pointer hover:opacity-80" onClick={() => handleSort('createdAt')}>
+                                        <span>Ngày đăng</span>
+                                        {getSortIcon('createdAt')}
+                                    </div>
                                 </th>
                                 <th scope="col" className="px-2 sm:px-4 py-2 sm:py-3">
                                     

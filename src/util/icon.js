@@ -4,7 +4,6 @@ import { BsPerson } from "react-icons/bs";
 import { IoSettingsOutline, IoMenu } from "react-icons/io5";
 import { IoHomeOutline } from "react-icons/io5";
 import { LuUser } from "react-icons/lu";
-import { FaSortDown, FaCaretRight } from "react-icons/fa";
 import { BsTag } from "react-icons/bs";
 import { HiOutlineNewspaper } from "react-icons/hi";
 import { LuReceiptText } from "react-icons/lu";
@@ -18,8 +17,13 @@ import { IoMdRefresh, IoMdAdd } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { FiSearch } from "react-icons/fi";
+import { FaSort, FaSortUp, FaSortDown, FaCaretRight } from "react-icons/fa6";
+
 
 const icon = {
+    FaCaretRight,
+    FaSortUp,
+    FaSort,
     FiSearch,
     AiOutlineRight,
     AiOutlineLeft,
@@ -43,7 +47,6 @@ const icon = {
     LuReceiptText,
     HiOutlineNewspaper,
     BsTag,
-    FaCaretRight,
     MdOutlineWidgets,
     BsPerson,
     IoMenu

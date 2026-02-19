@@ -10,3 +10,4 @@ export {default as Button} from './Button';
 export {default as Combobox} from './Combobox';
 export {default as Textarea} from './Textarea';
 export {default as Input} from './Input';
+export {default as Loading} from './Loading';

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Input, Button, Combobox, Textarea } from '../components';
+import { Input, Button, Combobox, Textarea, Loading } from '../components';
 import icon from '../util/icon';
 import { useDispatch, useSelector } from "react-redux";
 import generateSlug from '../util/slug';
-import { getObjects, addObject } from "../store/actions/object";
+import { getObjects, addObject, resetAddMessage } from "../store/actions/object";
 import { toast } from "react-toastify";
 const { MdChevronRight } = icon;
 const ObjectEdit = () => {
@@ -20,7 +20,7 @@ const ObjectEdit = () => {
         }
     ]
     const dispatch = useDispatch();
-    const { items: objects, addMessage } = useSelector(state => state.object || { items: []});
+    const { items: objects, addMessage, loading: addLoading } = useSelector(state => state.object || { items: [], loading: false });
     useEffect(() => {
         dispatch(getObjects());
     }, [dispatch])
@@ -65,13 +65,16 @@ const ObjectEdit = () => {
         if(addMessage === 'Thêm môn học thành công!') {
             navigate("/object")
             toast.success(addMessage)
-        }else{
+            dispatch(resetAddMessage())
+        }else if(addMessage){
             toast.error(addMessage)
+            dispatch(resetAddMessage())
         }
-    }, [addMessage, navigate])
+    }, [addMessage, navigate, dispatch])
     
     return (
         <div className="full pt-3 sm:pt-5">
+            {addLoading && <Loading />}
             <div className="w-full px-4 sm:px-6 md:px-7.5 flex gap-4 sm:gap-8">
                 <div className="w-full">
                     <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm md:text-[15px] text-color">
@@ -79,11 +82,11 @@ const ObjectEdit = () => {
                             Home
                         </NavLink>
                         <MdChevronRight className="text-sm sm:text-base"/>
-                        <NavLink to={'/'} className={"text-blue-600"}>
+                        <NavLink to={'/object'} className={"text-blue-600"}>
                             Danh mục
                         </NavLink>
                         <MdChevronRight className="text-sm sm:text-base"/>
-                        <NavLink to={'/category-add'} className={"text-blue-600"}>
+                        <NavLink to={'/object/add'} className={"text-blue-600"}>
                             Thêm mới store
                         </NavLink>
                     </div>
@@ -112,6 +115,12 @@ const ObjectEdit = () => {
                             name={"slug"}
                             onChange={handleChange}
                             value={formData?.slug}
+                        />
+                        <Input 
+                            label={"Thumbnail"} 
+                            name={"thumbnail"}
+                            onChange={handleChange}
+                            value={formData?.thumbnail}
                         />
                         <Input 
                             label={"Index"} 
