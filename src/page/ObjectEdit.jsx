@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { Input, Button, Combobox, Textarea, Loading } from '../components';
 import icon from '../util/icon';
 import { useDispatch, useSelector } from "react-redux";
 import generateSlug from '../util/slug';
-import { getObjects, addObject, resetAddMessage } from "../store/actions/object";
+import { getObjects, detailObject, editObject, resetEditMessage } from "../store/actions/object";
 import { toast } from "react-toastify";
 const { MdChevronRight } = icon;
-const ObjectAdd = () => {
+const ObjectEdit = () => {
     
     const activeData = [
         {
@@ -19,11 +19,6 @@ const ObjectAdd = () => {
             text: 'No'
         }
     ]
-    const dispatch = useDispatch();
-    const { items: objects, addMessage, loading: addLoading } = useSelector(state => state.object || { items: [], loading: false });
-    useEffect(() => {
-        dispatch(getObjects());
-    }, [dispatch])
     const [formData, setFormData] = useState({
         name: '',
         thumbnail: '',
@@ -33,6 +28,26 @@ const ObjectAdd = () => {
         description: '',
         slug: '',
     })
+    const dispatch = useDispatch();
+    const { item: objects, editMessage, loading: editLoading, items: obectjList } = useSelector(state => state.object);
+    const { id } = useParams();
+    useEffect(() => {
+        dispatch(getObjects());
+        dispatch(detailObject(id))
+    }, [dispatch, id]);
+    useEffect(() => {
+        if (objects?._id) {
+            setFormData({
+                name: objects.name || '',
+                thumbnail: objects.thumbnail || '',
+                parentId: objects.parentId || '',
+                index: objects.index || '9999',
+                active: objects.active || 'yes',
+                description: objects.description || '',
+                slug: objects.slug || '',
+            });
+        }
+    }, [objects?._id, objects.name, objects.thumbnail, objects.parentId, objects.index, objects.active, objects.description, objects.slug]);
     const handleChange = (e, selected) => {
         const { name, value } = e.target;
         const nextValue = selected ? selected.id || selected._id : value;
@@ -47,34 +62,25 @@ const ObjectAdd = () => {
             return updated;
         });
     };
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const handleSubmit  = (e) => {
         e.preventDefault();
-        dispatch(addObject(formData))
-        setFormData({
-            name: '',
-            thumbnail: '',
-            parentId: '',
-            index: '9999',
-            active: 'yes',
-            description: '',
-            slug: '',
-        })
+        dispatch(editObject(id, formData))
     }
     useEffect(() => {
-        if(addMessage === 'Thêm môn học thành công!') {
+        if(editMessage === 'Cập nhật môn học thành công!') {
             navigate("/object")
-            toast.success(addMessage)
-            dispatch(resetAddMessage())
-        }else if(addMessage){
-            toast.error(addMessage)
-            dispatch(resetAddMessage())
+            toast.success(editMessage)
+            dispatch(resetEditMessage())
+        }else if(editMessage){
+            toast.error(editMessage)
+            dispatch(resetEditMessage())
         }
-    }, [addMessage, navigate, dispatch])
+    }, [editMessage, navigate, dispatch])
     
     return (
         <div className="full pt-3 sm:pt-5">
-            {addLoading && <Loading />}
+            {editLoading && <Loading />}
             <div className="w-full px-4 sm:px-6 md:px-7.5 flex gap-4 sm:gap-8">
                 <div className="w-full">
                     <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm md:text-[15px] text-color">
@@ -83,24 +89,24 @@ const ObjectAdd = () => {
                         </NavLink>
                         <MdChevronRight className="text-sm sm:text-base"/>
                         <NavLink to={'/object'} className={"text-blue-600"}>
-                            Danh mục
+                            Object
                         </NavLink>
                         <MdChevronRight className="text-sm sm:text-base"/>
-                        <NavLink to={'/object/add'} className={"text-blue-600"}>
-                            Thêm mới store
+                        <NavLink to={`/object/${id}`} className={"text-blue-600"}>
+                            Update object
                         </NavLink>
                     </div>
-                    <h2 className="text-xl sm:text-2xl md:text-[35px] font-semibold mt-3 sm:mt-0">Thêm mới store</h2>
+                    <h2 className="text-xl sm:text-2xl md:text-[35px] font-semibold mt-5 sm:mt-3">Update object</h2>
                 </div>
             </div>
             <form className="w-full px-4 sm:px-6 md:px-7.5 bg-white mt-4 sm:mt-8 min-h-screen" onSubmit={handleSubmit}>
                 <div className="w-full flex flex-col sm:flex-row border-b-custom py-5 sm:py-10">
                     <div className="w-full sm:w-2/6 hidden sm:block">
                         <h5 className="text-lg sm:text-[20px] font-medium text-black text-color mt-0 sm:mt-5">
-                            Thông tin store
+                            Thông tin môn học
                         </h5>
                         <p className="text-[12px] text-[#888] line-clamp-2">
-                            Thông tin chi tiết về store
+                            Cập nhật, thông tin chi tiết về môn học
                         </p>
                     </div>
                     <div className="w-full sm:flex-1">
@@ -133,9 +139,9 @@ const ObjectAdd = () => {
                         <Combobox
                             label={"Parent object"}
                             name={"parentId"}
-                            data={objects}
+                            data={obectjList}
                             onChange={handleChange}
-                            selected={formData?.parentId}
+                            selected={formData?.parentId?._id}
                         />
                         <div className="mt-5"></div>
                         <Combobox
@@ -169,4 +175,4 @@ const ObjectAdd = () => {
     )
 }
 
-export default ObjectAdd
+export default ObjectEdit

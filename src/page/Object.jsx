@@ -22,7 +22,6 @@ const Object = () => {
     const { items: objects, loading: objectsLoading, error: objectsError } = useSelector(state => state.object || { items: [], loading: false, error: null });
     const [sortBy, setSortBy] = useState(null);
     useEffect(() => {
-        console.log('useEffect - sortBy:', sortBy);
         dispatch(getObjects('', sortBy || ''));
     }, [dispatch, sortBy])
     const [current, setCurrent] = useState(1);

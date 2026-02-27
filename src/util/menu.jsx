@@ -22,7 +22,7 @@ export const menu = [
     {
         text: 'Documents',
         icon: <HiOutlineNewspaper className='text-base text-color'/>,
-        path: '/new'
+        path: '/document',
     },
     {
         text: 'Users',

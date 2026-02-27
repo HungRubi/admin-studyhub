@@ -4,12 +4,19 @@ export const apiGetObject = (search = '', sort = 'createdAt_desc') => {
     const params = {};
     if (search) params.timkiem = search;
     if (sort) params.sort = sort;
-    console.log('apiGetObject - params:', params);
     return api.get('/objects', { params });
 };
 
 export const apiAddObject = (data) => {
     return api.post('/objects/add', data);
+};
+
+export const apiDetailObject = (id) => {
+    return api.get(`/objects/id/${id}`);
+};
+
+export const apiEditObject = (id, data) => {
+    return api.put(`/objects/${id}`, data);
 };
 
 export const apiDeleteObject = (id) => {

@@ -1,4 +1,8 @@
-import { apiGetObject, apiAddObject, apiDeleteObject, apiDeleteManyObjects } from '../../apis/object';
+import { apiGetObject, apiAddObject, apiDeleteObject, apiDeleteManyObjects, apiEditObject, apiDetailObject } from '../../apis/object';
+
+export const resetAddMessage = () => ({ type: 'RESET_ADD_MESSAGE' });
+export const resetEditMessage = () => ({ type: 'RESET_EDIT_MESSAGE' });
+export const resetObjects = () => ({ type: 'RESET_OBJECTS' });
 
 export const getObjects = (search = '', sort = 'createdAt_desc') => {
 	return async (dispatch) => {
@@ -14,10 +18,6 @@ export const getObjects = (search = '', sort = 'createdAt_desc') => {
 	};
 };
 
-export const resetObjects = () => ({ type: 'RESET_OBJECTS' });
-
-export const resetAddMessage = () => ({ type: 'RESET_ADD_MESSAGE' });
-
 export const addObject = (payload) => {
 	return async (dispatch) => {
 		dispatch({ type: 'ADD_OBJECT_REQUEST' });
@@ -32,6 +32,39 @@ export const addObject = (payload) => {
 		} catch (error) {
 			const msg = error?.response?.data?.message || error.message || 'Error';
 			dispatch({ type: 'ADD_OBJECT_FAILURE', payload: msg });
+			return { ok: false, message: msg };
+		}
+	};
+};
+
+export const detailObject = (id, payload) => {
+	return async (dispatch) => {
+		dispatch({ type: 'DETAIL_OBJECT_REQUEST' });
+		try {
+			const res = await apiDetailObject(id, payload);
+			const item = res?.data.object || {};
+			dispatch({ type: 'DETAIL_OBJECT_SUCCESS', payload: item });
+		} catch (error) {
+			const msg = error?.response?.data?.message || error.message || 'Error';
+			dispatch({ type: 'DETAIL_OBJECT_FAILURE', payload: msg });
+			return { ok: false, message: msg };
+		}
+	};
+};
+
+export const editObject = (id, payload) => {
+	return async (dispatch) => {
+		dispatch({ type: 'EDIT_OBJECT_REQUEST' });
+		try {
+			const res = await apiEditObject(id, payload);
+			const message = res?.data?.message || 'Edited';
+			dispatch({ type: 'EDIT_OBJECT_SUCCESS', payload: message });
+			
+			dispatch(getObjects('', 'createdAt_desc'));
+			return { ok: true, message };
+		} catch (error) {
+			const msg = error?.response?.data?.message || error.message || 'Error';
+			dispatch({ type: 'EDIT_OBJECT_FAILURE', payload: msg });
 			return { ok: false, message: msg };
 		}
 	};
